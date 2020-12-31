@@ -1,5 +1,6 @@
 package com.serezka.server.engine.server.transfer.file;
 
+import com.serezka.server.App;
 import com.serezka.server.engine.audio.AudioManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +12,11 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-/**
- *
- */
+
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger("RequestHandler");
 
@@ -26,18 +28,24 @@ public class RequestHandler implements Runnable {
 
     public void run() {
         try {
-            try (OutputStream clientSocketOutputStream = clientSocket.getOutputStream()) {
+            try (OutputStream clientOutput = clientSocket.getOutputStream();
+                 BufferedReader clientReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));) {
 
-                File file = new File("C:\\MusicStreamServer\\tracks\\sss.wav");
-                AudioInputStream in = AudioManager.getAudioInputStream(file);
+                // check file status
+                String fileName = clientReader.readLine().trim();
+                Path destFile = Paths.get(String.format("%s\\%s\\%s.%s", App.Files.MAIN_DIR, App.Files.TRACKS.getName(), fileName, App.Files.AUDIO_FILE_EXTENSION));
+                if (Files.notExists(destFile)) {
+                    clientOutput.write(App.Exceptions.FILE_NOT_EXISTS.getBytes());
+                    return;
+                }
+                FileInputStream in  = new FileInputStream(destFile.toFile());
+
 
                 long start = System.currentTimeMillis();
-                byte[] buffer = new byte[4096];
-                int c;
-                while (true) {
-                    assert in != null;
-                    if ((c = in.read(buffer, 0, buffer.length)) == -1) break;
-                    clientSocketOutputStream.write(buffer, 0, c);
+                int count;
+                byte[] buffer = new byte[4096]; // or 4096, or more
+                while ((count = in.read(buffer)) > 0) {
+                    clientOutput.write(buffer, 0, count);
                 }
 
                 logger.info("transfer completed in {} ms.", System.currentTimeMillis() - start);

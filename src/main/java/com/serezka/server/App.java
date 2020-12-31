@@ -4,7 +4,6 @@ public class App {
     public static final String NAME = "MusicStream Server";
     public static final double VERSION = 0.1;
 
-
     public enum Config {
         // DATABASE {future}
         DB_NAME("db_name"),
@@ -37,6 +36,9 @@ public class App {
         }
     }
 
+    public static class Exceptions {
+        public static final String FILE_NOT_EXISTS = "file_not_exists";
+    }
 
     public enum Files {
         CONFIG("cfg.properties", Type.FILE),
@@ -47,7 +49,7 @@ public class App {
         }
 
         public static final String MAIN_DIR = "C:\\MusicStreamServer";
-        public static final String AUDIO_FILE_EXTENSION = ".wav";
+        public static final String AUDIO_FILE_EXTENSION = "wav";
 
         private final String name;
         private final Type type;
