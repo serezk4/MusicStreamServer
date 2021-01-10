@@ -31,7 +31,6 @@ public class AudioManager {
      */
     public static AudioFormat getAudioFormat(AudioFormat base) {
         // TODO: FIX PROBLEM WITH COMPRESSION
-
 //        return new AudioFormat(AudioFormat.Encoding.ALAW,
 //                Float.parseFloat(Start.getProperties().getProperty(App.Config.AUDIO_SAMPLE_RATE.getName())),
 //                Integer.parseInt(Start.getProperties().getProperty(App.Config.AUDIO_SAMPLE_SIZE.getName())),

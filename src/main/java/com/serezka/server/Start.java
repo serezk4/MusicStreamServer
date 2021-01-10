@@ -1,11 +1,12 @@
 package com.serezka.server;
 
-import com.serezka.server.engine.server.transfer.file.AudioFileServer;
+import com.serezka.server.engine.server.data.UdpDataServer;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -92,9 +93,9 @@ public class Start {
 
         // init
         logger.info("Server initialization...");
-        Thread fileServer;
+        Thread dataServer;
         try {
-            fileServer = new Thread(new AudioFileServer(
+            dataServer = new Thread(new UdpDataServer(
                     properties.getProperty(App.Config.SERVER_IP.getName()),
                     Integer.parseInt(properties.getProperty(App.Config.SERVER_PORT_FILE.getName()))
             ));
@@ -105,8 +106,8 @@ public class Start {
 
 
         // start
-        fileServer.setName("Server");
-        fileServer.start();
+        dataServer.setName("Server");
+        dataServer.start();
         logger.info("Server started successfully in {} ms! ", (System.currentTimeMillis() - start));
     }
 

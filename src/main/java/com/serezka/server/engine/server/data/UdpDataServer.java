@@ -1,27 +1,29 @@
-package com.serezka.server.engine.server.transfer.file;
+package com.serezka.server.engine.server.data;
 
+import com.serezka.server.App;
+import com.serezka.server.Start;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 
-public class AudioFileServer implements Runnable {
+public class UdpDataServer implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger("FileServer");
 
     protected final int serverPort;
-    protected final InetAddress address;
+    protected final InetAddress serverAddress;
 
-    protected ServerSocket serverSocket = null;
     protected boolean isStopped = false;
     protected Thread runningThread = null;
 
-    public AudioFileServer(String address, int port) throws UnknownHostException {
+    protected final int maxPacketSize = Integer.parseInt(Start.getProperties().getProperty(App.Config.SERVER_PACKET_SIZE.getName()));
+    protected final byte[] buffer = new byte[maxPacketSize];
+    protected DatagramSocket datagramSocket;
+
+    public UdpDataServer(String address, int port) throws UnknownHostException {
         this.serverPort = port;
-        this.address = InetAddress.getByName(address);
+        this.serverAddress = InetAddress.getByName(address);
     }
 
     public void run() {
@@ -32,8 +34,10 @@ public class AudioFileServer implements Runnable {
         openServerSocket();
         while (!isStopped()) {
             try {
-                Socket clientSocket = this.serverSocket.accept();
-                new Thread(new RequestHandler(clientSocket)).start();
+                // receive and process
+                DatagramPacket receivedPacket = new DatagramPacket(buffer, buffer.length);
+                datagramSocket.receive(receivedPacket);
+                new Thread(new UdpRequestHandler(datagramSocket, receivedPacket)).start();
             } catch (IOException e) {
                 if (isStopped()) {
                     logger.info("Server stopped!");
@@ -52,16 +56,12 @@ public class AudioFileServer implements Runnable {
 
     public synchronized void stop() {
         this.isStopped = true;
-        try {
-            this.serverSocket.close();
-        } catch (IOException e) {
-            logger.error("Can't stop server! {}.", e.getMessage());
-        }
+        this.datagramSocket.close();
     }
 
     private void openServerSocket() {
         try {
-            this.serverSocket = new ServerSocket(this.serverPort);
+            this.datagramSocket = new DatagramSocket(this.serverPort, this.serverAddress);
         } catch (IOException e) {
             logger.error("Port {} is busy. {}.", this.serverPort, e.getMessage());
         }
