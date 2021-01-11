@@ -1,4 +1,4 @@
-package com.serezka.server.engine.server.data;
+package com.serezka.server.engine.server.audio;
 
 
 import com.serezka.server.App;
@@ -8,9 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.AudioInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.file.Files;
@@ -45,9 +42,9 @@ class UdpRequestHandler implements Runnable {
             // file exists
             // send audio input stream via udp
             AudioInputStream audioInputStream = AudioManager.getAudioInputStream(file.toFile());
-            byte[] buffer = new byte[Integer.parseInt(Start.getProperties().getProperty(App.Config.SERVER_PACKET_SIZE.getName()))];
+            byte[] buffer = new byte[Integer.parseInt(Start.getProperties().getProperty(App.Config.SERVER_AUDIO_PACKET_SIZE.getName()))];
             int c;
-            int packetDelay = Integer.parseInt(Start.getProperties().getProperty(App.Config.SERVER_PACKET_DELAY.getName())); // ms
+            int packetDelay = Integer.parseInt(Start.getProperties().getProperty(App.Config.SERVER_AUDIO_PACKET_DELAY.getName())); // ms
             while (true) {
                 assert audioInputStream != null;
                 if ((c = audioInputStream.read(buffer)) == -1) break;

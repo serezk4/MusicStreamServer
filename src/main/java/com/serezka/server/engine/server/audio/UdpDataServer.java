@@ -1,4 +1,4 @@
-package com.serezka.server.engine.server.data;
+package com.serezka.server.engine.server.audio;
 
 import com.serezka.server.App;
 import com.serezka.server.Start;
@@ -17,7 +17,7 @@ public class UdpDataServer implements Runnable {
     protected boolean isStopped = false;
     protected Thread runningThread = null;
 
-    protected final int maxPacketSize = Integer.parseInt(Start.getProperties().getProperty(App.Config.SERVER_PACKET_SIZE.getName()));
+    protected final int maxPacketSize = Integer.parseInt(Start.getProperties().getProperty(App.Config.SERVER_AUDIO_PACKET_SIZE.getName()));
     protected final byte[] buffer = new byte[maxPacketSize];
     protected DatagramSocket datagramSocket;
 

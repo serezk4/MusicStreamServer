@@ -12,10 +12,12 @@ public class App {
 
         // SERVER
         SERVER_IP("server_ip"),
-        SERVER_PORT_FILE("server_port_data"),
+        SERVER_PORT_AUDIO("server_port_data"),
         SERVER_PORT_INFO("server_port_info"),
-        SERVER_PACKET_SIZE("server_packetSize"),
-        SERVER_PACKET_DELAY("server_packetDelay"),
+        SERVER_PORT_DATA("server_port_data"),
+        SERVER_AUDIO_PACKET_SIZE("server_packetSize"),
+        SERVER_AUDIO_PACKET_DELAY("server_packetDelay"),
+        SERVER_DATA_MAX_CONNECTIONS("server_maxConnections"),
 
         // AUDIO
         AUDIO_SAMPLE_RATE("audio_sampleRate"),
